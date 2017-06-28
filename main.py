@@ -15,7 +15,7 @@ for i in range(10):
     i2c.send(data,96)
     time.sleep(1)
 
-
-i2c.send(b'\x02F\x07\x02',96)
+#\x66\x03 in binary: 366 = 0011 0110 0110, so this lights go on
+i2c.send(b'\x02F\x66\x03',96)
 
 
