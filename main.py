@@ -1,4 +1,6 @@
-from pyb import I2C
+#from pyb import I2C
+from resistor import Resistor
+"""
 i2c = I2C(2)
 i2c = I2C(2, I2C.MASTER)
 i2c.init(I2C.MASTER, baudrate=20000)
@@ -17,5 +19,7 @@ for i in range(10):
 
 
 i2c.send(b'\x02F\x07\x02',96)
-
-
+"""
+res = Resistor()
+#res.GetResistor(3000)
+res.SetResistor(3000)
