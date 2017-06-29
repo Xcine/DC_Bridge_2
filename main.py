@@ -3,4 +3,4 @@ from resistor import Resistor
 import time
 
 res = Resistor()
-res.SetResistor(3000.0)
+res.set_resistor(3000.0)
