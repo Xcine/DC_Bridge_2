@@ -4,7 +4,7 @@ class Resistor(object):
 
 	def __init__(self, allResistors = [1600, 800, 400, 200, 100, 50, 25, 12.5, 6.25, 3.125]):
 		self.allResistors = allResistors
-		self.currenResistorBinary = [0,0,0,0,0,0,0,0,0,0]
+		self.currentResistorBinary = [1,1,1,1,1,1,1,1,1,1]
 		self.i2c = I2C(2)
 		self.i2c = I2C(2, I2C.MASTER)
 		self.i2c.init(I2C.MASTER, baudrate=20000)
@@ -28,11 +28,11 @@ class Resistor(object):
 
 		if (type(input) == int) or (type(input) == float): 
 			resistorBin = self.FindBinaryResistor(input)
-			self.currenResistorBinary = resistorBin
+			self.currentResistorBinary = resistorBin
 			bin1 = resistorBin[:2]
 			bin2 = resistorBin[2:]
 		elif (type(input) == list) and len(input) == 10:
-			self.currenResistorBinary = input
+			self.currentResistorBinary = input
 			bin1 = input[:2]
 			bin2 = input[2:]
 		else:
@@ -46,7 +46,8 @@ class Resistor(object):
 		self.i2c.send(data,96)
 
 	def GetResistor(self):
-		return (self.dotProd(self.negBinaryList(self.currenResistorBinary), self.allResistors) + 1000.0)
+		return (self.dotProd(self.negBinaryList(self.currentResistorBinary), self.allResistors) + 1000.0)
+		#return self.negBinaryList(self.currentResistorBinary)
 
 	def FindResistor(self, input):
 		return (self.dotProd(self.negBinaryList(self.FindBinaryResistor(input)), self.allResistors) + 1000.0)
@@ -65,14 +66,12 @@ class Resistor(object):
 
 		return sum
 
-	def negBinaryList(self, list):
-		for x in list:
-			if x == 0:
-				x = 1
-			else:
-				x = 0
+	def negBinaryList(self, input):
+		inputlist = [1,1,1,1,1,1,1,1,1,1]
+		for x in range(10):
+			inputlist[x] = not input[x]
 
-		return list
+		return inputlist
 
 
 
