@@ -1,4 +1,5 @@
 from pyb import I2C
+import time
 
 class Resistor(object):
 	"""Class for editing the variable resistor.
@@ -87,6 +88,25 @@ class Resistor(object):
 			dummy_list[x] = not input[x]
 
 		return dummy_list
+
+	def set_resistors(self, res1, res2=None, resistor_step=None, sleeptime=0.5):
+		"""Runs through a list of resistor values in a specified sleeptime or starts with a
+		resistor value and increases the resistor in a specified step till the second resistor value."""
+		if resistor_step == None and res2 == None:
+			for x in res1:
+				self.set_resistor(x)
+				time.sleep(sleeptime)
+		elif resistor_step == None and res2 != None:
+			for x in res1:
+				self.set_resistor(x)
+				time.sleep(res2)
+		else:
+			while res1 <= res2:
+				self.set_resistor(res1)
+				res1 += resistor_step
+				time.sleep(sleeptime)
+
+
 
 
 
