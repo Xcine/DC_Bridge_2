@@ -1,9 +1,15 @@
 #from numpy import dot
+from pyb import I2C
 
 class Resistor(object):
 
 	def __init__(self, allResistors = [1600, 800, 400, 200, 100, 50, 25, 12.5, 6.25, 3.125]):
 		self.allResistors = allResistors
+		self.i2c = I2C(2)
+		self.i2c = I2C(2, I2C.MASTER)
+		self.i2c.init(I2C.MASTER, baudrate=20000)
+		info = self.i2c.scan()
+		print("scan ",info)
 
 	def GetResistor(self, input = 1000.0):
 		input -= 1000.0
@@ -16,8 +22,8 @@ class Resistor(object):
 			else:
 				pass
 
-		#print dot(resistorBin, self.allResistors) + 1000.0
-		print resistorBin
+		print (self.dotProd(resistorBin, self.allResistors) + 1000.0)
+		#print resistorBin
 		return resistorBin
 
 	def SetResistor(self, input):
@@ -29,10 +35,7 @@ class Resistor(object):
 		data[2] = self.GetBinaryOfList(Bin2)
 		data[3] = self.GetBinaryOfList(Bin1)
 
-		#i2c.send(data,96)
-		print data[2]
-		print data[3]
-
+		self.i2c.send(data,96)
 
 	def GetBinaryOfList(self, input):
 		out = 0
@@ -40,6 +43,14 @@ class Resistor(object):
 			out = (out << 1) | bit
 
 		return out
+
+	def dotProd(self, list1, list2):
+		sum = 0
+		for x in range(len(list1)):
+			sum += (list1[x]*list2[x])
+
+		return sum
+
 
 
 
