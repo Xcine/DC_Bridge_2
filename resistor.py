@@ -54,7 +54,7 @@ class Resistor(object):
 		data[2] = self.get_binary_of_list(binary2)
 		data[3] = self.get_binary_of_list(binary3)
 
-		print("setting resistor to", self.get_resistor(), "Ohm")
+		print("Setting resistor to", self.get_resistor(), "Ohm.")
 		self.i2c.send(data,96)
 
 	def get_resistor(self):
@@ -64,6 +64,34 @@ class Resistor(object):
 	def find_resistor(self, input):
 		"""Finds the next valid resistor(float)."""
 		return (self.dot_prod(self.negate_binary_list(self.find_binary_resistor(input)), self.all_resistors) + 1000.0)
+
+	def set_resistor_list(self, input, sleeptime=0.5):
+		"""Runs through a list of resistor values in a specified sleeptime."""
+		for x in input:
+			self.set_resistor(x)
+			time.sleep(sleeptime)
+
+	def set_resistor_step(self, res1, res2, resistor_step=100.0, sleeptime=0.5):
+		"""Starts with a resistor value and increases the resistor in a specified step
+		till the second resistor value."""
+		if res1 <= res2:
+			if res1 < 1000.0:
+				res1 = 1000.0
+			if res2 > 4196.875:
+				res2 = 4196.875
+			while res1 <= res2:
+				self.set_resistor(res1)
+				res1 += resistor_step
+				time.sleep(sleeptime)
+		else:
+			if res1 > 4196.875:
+				res1 = 4196.875
+			if res2 < 1000.0:
+				res2 = 1000.0
+			while res2 <= res1:
+				self.set_resistor(res1)
+				res1 -= resistor_step
+				time.sleep(sleeptime)
 
 	def get_binary_of_list(self, input):
 		"""Returns the binary from of a list of bits."""
@@ -88,28 +116,4 @@ class Resistor(object):
 			dummy_list[x] = not input[x]
 
 		return dummy_list
-
-	def set_resistors(self, res1, res2=None, resistor_step=None, sleeptime=0.5):
-		"""Runs through a list of resistor values in a specified sleeptime or starts with a
-		resistor value and increases the resistor in a specified step till the second resistor value."""
-		if resistor_step == None and res2 == None:
-			for x in res1:
-				self.set_resistor(x)
-				time.sleep(sleeptime)
-		elif resistor_step == None and res2 != None:
-			for x in res1:
-				self.set_resistor(x)
-				time.sleep(res2)
-		else:
-			while res1 <= res2:
-				self.set_resistor(res1)
-				res1 += resistor_step
-				time.sleep(sleeptime)
-
-
-
-
-
-
-
 			
