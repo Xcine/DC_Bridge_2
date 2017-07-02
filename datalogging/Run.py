@@ -8,7 +8,7 @@ def main():
 	pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
 	pyb1.enter_raw_repl()
 	#output = pyb1.execfile("test.py")
-	output = pyb1.exec('print(1+1)')
+	output = pyb1.exec_('print(1+1)')
 	pyb1.exit_raw_repl()
 	pyb1.close()
 	print("_______________")
