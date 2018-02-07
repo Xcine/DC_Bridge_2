@@ -1,5 +1,6 @@
 from pyb import I2C
 import time
+import lcd160cr
 
 class Resistor(object):
 	"""Class for editing the variable resistor.
@@ -22,6 +23,17 @@ class Resistor(object):
 		info = self.i2c.scan()
 		#print("scan ",info)
 
+		#LCD
+		self.lcd = lcd160cr.LCD160CR('YX')
+		self.lcd.set_orient(lcd160cr.LANDSCAPE)
+		self.lcd.set_pos(30, 20)
+		self.lcd.set_text_color(self.lcd.rgb(255, 255, 255), self.lcd.rgb(0, 0, 0))
+		self.lcd.set_font(1,1,0,0,0)
+
+		self.lcd.erase()
+		self.lcd.set_pos(25, 60)
+		self.lcd.write("0000.000Ω")
+
 	def find_binary_resistor(self, input=1000.0):
 		"""Finds the next valid resistor and returns the resistor as a list of bits."""
 		input -= 1000.0
@@ -36,6 +48,9 @@ class Resistor(object):
 
 		return resistor_bin
 
+	def max_test(self, a):
+		return a*a
+
 	def set_resistor(self, input = 1000.0):
 		"""Sets the next valid resistor in accordance to the input."""
 		if (type(input) == int) or (type(input) == float): 
@@ -48,7 +63,7 @@ class Resistor(object):
 			binary2 = input[2:]
 			binary3 = input[:2]
 		else:
-			print("ERROR: wrong type oder length of array")
+			raise ERROR("ERROR: wrong type oder length of array")
 
 		data = bytearray([0x02,0x46,0xFF,0x03])
 		data[2] = self.get_binary_of_list(binary2)
@@ -57,9 +72,17 @@ class Resistor(object):
 		print("Setting resistor to", self.get_resistor(), "Ohm.")
 		self.i2c.send(data,96)
 
+		string = "%.3f" % self.get_resistor()
+		self.lcd.set_pos(25, 60)
+		self.lcd.write(string)
+
 	def get_resistor(self):
 		"""Returns the current set resistor(float)."""
 		return (self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
+
+	def get_resistor_string(self):
+		"""Returns the current set resistor(float)."""
+		print(self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
 
 	def find_resistor(self, input):
 		"""Finds the next valid resistor(float)."""

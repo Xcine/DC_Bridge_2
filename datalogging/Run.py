@@ -5,6 +5,7 @@ import pyboard
 import serial
 import numpy as np
 import re
+import matplotlib.pyplot as plt
 
 def string_to_array(input):
 	all_ns = [m.start() for m in re.finditer('\n', input)]
@@ -20,17 +21,35 @@ def main():
 	pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
 	pyb1.enter_raw_repl()
 	#output = pyb1.execfile("test.py")
-	output = pyb1.exec_('printres()')
-	pyb1.exit_raw_repl()
-	pyb1.close()
-	print("_______________")
-	output.decode("utf-8")
+	pyb1.exec_('from resistor import Resistor')
+	pyb1.exec_('res = Resistor()')
+	pyb1.exec_('res.set_resistor(2000)')
+	value = float(pyb1.exec_('res.get_resistor_string()'))
+	#pyb1.exec_('res.set_resistor(1500)')
+	#pyb1.exit_raw_repl()
+	#pyb1.close()
+	#print("_______________")
+	#output.decode("utf-8")
+	#print(output)
+	"""
 	#output_arr = string_to_array(output)
 	res_values = re.findall(r"[-+]?\d*\.\d+|\d+", output)
 	res_values = [float(x) for x in res_values]
 	print(res_values)
+	vol_values = [x*1.5 for x in res_values]
+	print(vol_values)
+	plt.plot(res_values, vol_values)
+	plt.show()
 	#zahl = int(output.decode("utf-8"))
 	#print(zahl+51)
+	"""
 
 if __name__ == '__main__':
     main()
+
+pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
+pyb1.enter_raw_repl()
+#output = pyb1.execfile("test.py")
+pyb1.exec_('from resistor import Resistor')
+pyb1.exec_('res = Resistor()')
+pyb1.exec_('res.set_resistor(2000)')
