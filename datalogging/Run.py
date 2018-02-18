@@ -23,8 +23,9 @@ def main():
 	#output = pyb1.execfile("test.py")
 	pyb1.exec_('from resistor import Resistor')
 	pyb1.exec_('res = Resistor()')
-	pyb1.exec_('res.set_resistor(2000)')
+	pyb1.exec_('res.set_resistor(3001)')
 	value = float(pyb1.exec_('res.get_resistor_string()'))
+	print(value)
 	#pyb1.exec_('res.set_resistor(1500)')
 	#pyb1.exit_raw_repl()
 	#pyb1.close()
@@ -45,11 +46,11 @@ def main():
 	"""
 
 if __name__ == '__main__':
-    main()
+	main()
 
-pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
-pyb1.enter_raw_repl()
+#pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
+#pyb1.enter_raw_repl()
 #output = pyb1.execfile("test.py")
-pyb1.exec_('from resistor import Resistor')
-pyb1.exec_('res = Resistor()')
-pyb1.exec_('res.set_resistor(2000)')
+#pyb1.exec_('from resistor import Resistor')
+#pyb1.exec_('res = Resistor()')
+#pyb1.exec_('res.set_resistor(2000)')

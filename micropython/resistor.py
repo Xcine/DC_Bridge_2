@@ -17,6 +17,7 @@ class Resistor(object):
 		"""Inits Resistor class."""
 		self.all_resistors = all_resistors
 		self.current_resistor_binary = [1,1,1,1,1,1,1,1,1,1]
+		self.current_resistor = (self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
 		self.i2c = I2C(2)
 		self.i2c = I2C(2, I2C.MASTER)
 		self.i2c.init(I2C.MASTER, baudrate=20000)
@@ -63,7 +64,7 @@ class Resistor(object):
 			binary2 = input[2:]
 			binary3 = input[:2]
 		else:
-			raise ERROR("ERROR: wrong type oder length of array")
+			raise TypeError("ERROR: wrong type oder length of array")
 
 		data = bytearray([0x02,0x46,0xFF,0x03])
 		data[2] = self.get_binary_of_list(binary2)
@@ -78,11 +79,12 @@ class Resistor(object):
 
 	def get_resistor(self):
 		"""Returns the current set resistor(float)."""
-		return (self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
+		return self.current_resistor
 
 	def get_resistor_string(self):
 		"""Returns the current set resistor(float)."""
-		print(self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
+		#print(self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
+		print(self.current_resistor)
 
 	def find_resistor(self, input):
 		"""Finds the next valid resistor(float)."""

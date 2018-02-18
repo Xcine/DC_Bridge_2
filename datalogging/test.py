@@ -1,35 +1,4 @@
 # coding: utf8
-"""
-from appJar import gui
-
-app = gui()
-app.addLabel("title", "Welcome to appJar")
-app.setLabelBg("title", "red")
-app.go()
-
-from Tkinter import Tk, Label, Button
-
-class MyFirstGUI:
-    def __init__(self, master):
-        self.master = master
-        master.title("A simple GUI")
-
-        self.label = Label(master, text="This is our first GUI!")
-        self.label.pack()
-
-        self.greet_button = Button(master, text="Greet", command=self.greet)
-        self.greet_button.pack()
-
-        self.close_button = Button(master, text="Close", command=master.quit)
-        self.close_button.pack()
-
-    def greet(self):
-        print("Greetings!")
-
-root = Tk()
-my_gui = MyFirstGUI(root)
-root.mainloop()
-"""
 import matplotlib
 matplotlib.use('TkAgg')
 
@@ -47,8 +16,17 @@ if sys.version_info[0] < 3:
 else:
     import tkinter as Tk
 
+import sys
+sys.path.insert(0, '/Users/Georg/micropython/tools')
+sys.path.insert(0, '/Users/Georg/micropython')
+import pyboard
+import serial
+import numpy as np
+import re
+import matplotlib.pyplot as plt
+
 root = Tk.Tk()
-root.wm_title("Embedding in TK")
+root.wm_title("Gleichstrombrücke")
 
 
 f = Figure(figsize=(5, 4), dpi=100)
@@ -58,6 +36,12 @@ s = sin(2*pi*t)
 
 a.plot(t, s)
 
+pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
+pyb1.enter_raw_repl()
+#output = pyb1.execfile("test.py")
+pyb1.exec_('from resistor import Resistor')
+pyb1.exec_('res = Resistor()')
+value = 1000
 
 # a tk.DrawingArea
 canvas = FigureCanvasTkAgg(f, master=root)
@@ -80,6 +64,15 @@ def _quit():
     root.quit()     # stops mainloop
     root.destroy()  # this is necessary on Windows to prevent
                     # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+
+
+def change_res(value):
+    print(value)
+
+button = Tk.Button(master=root, text='Change Res1', command=change_res(1000))
+button.pack(side=Tk.BOTTOM)
+button = Tk.Button(master=root, text='Change Res2', command=change_res(2000))
+button.pack(side=Tk.BOTTOM)
 
 button = Tk.Button(master=root, text='Quit', command=_quit)
 button.pack(side=Tk.BOTTOM)
