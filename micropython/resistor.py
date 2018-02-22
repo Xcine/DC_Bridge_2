@@ -70,21 +70,22 @@ class Resistor(object):
 		data[2] = self.get_binary_of_list(binary2)
 		data[3] = self.get_binary_of_list(binary3)
 
-		print("Setting resistor to", self.get_resistor(), "Ohm.")
+		#print("Setting resistor to", self.get_resistor(), "Ohm.")
 		self.i2c.send(data,96)
-
-		string = "%.3f" % self.get_resistor()
+		self.current_resistor = self.get_resistor()
+		string = "{:4.3f}".format(self.current_resistor)
 		self.lcd.set_pos(25, 60)
 		self.lcd.write(string)
+		#print(self.current_resistor)
 
 	def get_resistor(self):
 		"""Returns the current set resistor(float)."""
-		return self.current_resistor
+		return self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0
 
 	def get_resistor_string(self):
 		"""Returns the current set resistor(float)."""
-		#print(self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
-		print(self.current_resistor)
+		print(self.dot_prod(self.negate_binary_list(self.current_resistor_binary), self.all_resistors) + 1000.0)
+		#print(self.current_resistor)
 
 	def find_resistor(self, input):
 		"""Finds the next valid resistor(float)."""

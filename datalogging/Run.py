@@ -1,8 +1,8 @@
 import sys
-sys.path.insert(0, '/Users/Georg/micropython/tools')
-sys.path.insert(0, '/Users/Georg/micropython')
+sys.path.insert(0, '/home/georg/Dokumente/Arbeit/micropython-master/tools')
+sys.path.insert(0, '/home/georg/Dokumente/Arbeit/micropython-master')
 import pyboard
-import serial
+#from serial import serial 
 import numpy as np
 import re
 import matplotlib.pyplot as plt
@@ -18,12 +18,12 @@ def string_to_array(input):
 	return string_array
 
 def main():
-	pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
+	#pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
+	pyb1 = pyboard.Pyboard(device = "/dev/ttyACM0")
 	pyb1.enter_raw_repl()
-	#output = pyb1.execfile("test.py")
 	pyb1.exec_('from resistor import Resistor')
 	pyb1.exec_('res = Resistor()')
-	pyb1.exec_('res.set_resistor(3001)')
+	pyb1.exec_('res.set_resistor(3400)')
 	value = float(pyb1.exec_('res.get_resistor_string()'))
 	print(value)
 	#pyb1.exec_('res.set_resistor(1500)')
@@ -50,7 +50,6 @@ if __name__ == '__main__':
 
 #pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
 #pyb1.enter_raw_repl()
-#output = pyb1.execfile("test.py")
 #pyb1.exec_('from resistor import Resistor')
 #pyb1.exec_('res = Resistor()')
 #pyb1.exec_('res.set_resistor(2000)')
