@@ -1,6 +1,7 @@
 from pyb import I2C
 import time
 import lcd160cr
+import pyb
 
 class Resistor(object):
 	"""Class for editing the variable resistor.
@@ -34,6 +35,17 @@ class Resistor(object):
 		self.lcd.erase()
 		self.lcd.set_pos(25, 60)
 		self.lcd.write("0000.000Ω")
+
+		self.acd = pyb.ADC(pyb.Pin('X19'))
+		self.adc_value = float(self.adc.read()/4096.0)
+
+	def get_adc_string(self):
+		means = [0.0 for i in range(50)]
+		for i in range(len(means)):
+			x = float(self.adc.read()/4096.0)
+			means[i] = x
+		adc_value = build_mean(means)
+		print(adc_value)
 
 	def find_binary_resistor(self, input=1000.0):
 		"""Finds the next valid resistor and returns the resistor as a list of bits."""
@@ -142,4 +154,10 @@ class Resistor(object):
 			dummy_list[x] = not input[x]
 
 		return dummy_list
+
+	def build_mean(mean_array, sum=0):
+	"""Returns the mean of an Array."""
+	for i in mean_array:
+		sum += i
+	return float(sum/len(mean_array))
 			

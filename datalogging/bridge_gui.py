@@ -33,15 +33,15 @@ root.wm_title("Gleichstrombrücke")
 f = Figure(figsize=(10, 5.8), dpi=100)
 f.suptitle("Widerstands-Spannungskurve", fontsize=14)
 a = f.add_subplot(111)
-t = arange(0.0, 20.0, 1.0)
-s = []
+res = []
+vol = []
 a.set_ylabel("Brueckenspannung in Volt")
 a.set_ylim([0,5])
 a.set_xlabel("Widerstand R in Ohm")
 a.set_xlim([0,4200])
 line1, = a.plot([],[],'r.')
+graph_color = "black"
 
-"""
 #pyb1 = pyboard.Pyboard(device = "/dev/tty.usbmodem1412")
 pyb1 = pyboard.Pyboard(device = "/dev/ttyACM0")
 pyb1.enter_raw_repl()
@@ -49,7 +49,6 @@ pyb1.enter_raw_repl()
 pyb1.exec_('import time')
 pyb1.exec_('from resistor import Resistor')
 pyb1.exec_('res = Resistor()')
-value = 1000
 
 def set_resistor_step(res1, res2, resistor_step=100.0, sleeptime=0.5):
     #Starts with a resistor value and increases the resistor in a specified step
@@ -61,12 +60,15 @@ def set_resistor_step(res1, res2, resistor_step=100.0, sleeptime=0.5):
             res2 = 4196.875
         while res1 <= res2:
             pyb1.exec_('res.set_resistor(' + str(res1) + ')')
+            value_board = pyb1.exec_('res.get_resistor_string()')
+            if value_board != res1:
+                raise ValueError("Resistor was not set.")
+            vol_val = float(pyb1.exec_('res.get_adc_string()'))
             res1 += resistor_step
-            val = pyb1.exec_('res.get_resistor_string()')
-            s.append(val)
-            t = arange(0, len(s), 1.0)
-            line1.set_ydata(s)
-            line1.set_xdata(t)
+            res.append(value_board)
+            vol.append(vol_val)
+            line1.set_ydata(res)
+            line1.set_xdata(vol)
             f.canvas.draw()
             pyb1.exec_('time.sleep(' + str(sleeptime) + ')')
     else:
@@ -76,10 +78,126 @@ def set_resistor_step(res1, res2, resistor_step=100.0, sleeptime=0.5):
             res2 = 1000.0
         while res2 <= res1:
             pyb1.exec_('res.set_resistor(' + str(res1) + ')')
-            res1 -= resistor_step
-            time.sleep(sleeptime)
-"""
+            value_board = pyb1.exec_('res.get_resistor_string()')
+            if value_board != res1:
+                raise ValueError("Resistor was not set.")
+            vol_val = float(pyb1.exec_('res.get_adc_string()'))
+            res1 += resistor_step
+            res.append(value_board)
+            vol.append(vol_val)
+            line1.set_ydata(res)
+            line1.set_xdata(vol)
+            f.canvas.draw()
+            pyb1.exec_('time.sleep(' + str(sleeptime) + ')')
 
+def set_resistors():
+    num=0
+    try:
+        start_r = float(res_start_entry.get())
+        res_start_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_start_entry.config({"background": "red"})
+
+    try:
+        end_r = float(res_end_entry.get())
+        res_end_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_end_entry.config({"background": "red"})
+
+    try:
+        step_r = float(res_step_entry.get())
+        res_step_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_step_entry.config({"background": "red"})
+
+    try:
+        time_r = float(res_time_entry.get())
+        res_time_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_time_entry.config({"background": "red"})
+
+    if num == 4:
+        set_resistor_step(start_r, end_r, step_r, time_r)
+
+
+def set_resistor():
+    try:
+        value = float(set_res_entry.get())
+        set_res_entry.config({"background": "white"})
+
+        pyb1.exec_('res.set_resistor(' + str(value) + ')')
+        value_board = float(pyb1.exec_('res.get_resistor_string()'))
+        if value_board != value:
+            raise ValueError("Resistor was not set.")
+        vol_val = float(pyb1.exec_('res.get_adc_string()'))
+        res.append(value)
+        vol.append(vol_val)
+        line1.set_ydata(res)
+        line1.set_xdata(vol)
+        f.canvas.draw()
+    except:
+        set_res_entry.config({"background": "red"})
+
+def reset_graph():
+    line1.set_ydata([])
+    line1.set_xdata([])
+
+def set_graph_color(string):
+    if string == "black":
+        line1.set_color('#000000')
+        graph_color = "black"
+        graph_pen.config(text='Stift ist bei: (0,0), ' + graph_color)
+    elif string == "blue":
+        line1.set_color('#0000FF')
+        graph_color = "blue"
+        graph_pen.config(text='Stift ist bei: (0,0), ' + graph_color)
+    elif string == "red":
+        line1.set_color('#FF0000')
+        graph_color = "red"
+        graph_pen.config(text='Stift ist bei: (0,0), ' + graph_color)
+    elif string == "green":
+        line1.set_color('#00FF00')
+        graph_color = "green"
+        graph_pen.config(text='Stift ist bei: (0,0), ' + graph_color)
+    else:
+        raise ValueError("No such color.")
+
+def showit():
+    num=0
+    try:
+        start_r = float(res_start_entry.get())
+        res_start_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_start_entry.config({"background": "red"})
+
+    try:
+        end_r = float(res_end_entry.get())
+        res_end_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_end_entry.config({"background": "red"})
+
+    try:
+        step_r = float(res_step_entry.get())
+        res_step_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_step_entry.config({"background": "red"})
+
+    try:
+        time_r = float(res_time_entry.get())
+        res_time_entry.config({"background": "white"})
+        num += 1
+    except:
+        res_time_entry.config({"background": "red"})
+
+    if num == 4:
+        set_resistor_step(start_r, end_r, step_r, time_r)
 
 # a tk.DrawingArea
 #draw_frame = Tk.Frame(root)
@@ -107,15 +225,6 @@ def _quit():
     root.quit()     # stops mainloop
     root.destroy()  # this is necessary on Windows to prevent
                     # Fatal Python Error: PyEval_RestoreThread: NULL tstate
-
-
-def change_res(value):
-    #pyb1.exec_('res.set_resistor(' + str(value) + ')')
-    s.append(value)
-    t = arange(0, len(s), 1.0)
-    line1.set_ydata(s)
-    line1.set_xdata(t)
-    f.canvas.draw()
 
 ia_frame = Tk.Frame(root, highlightthickness=0, highlightcolor="black", highlightbackground="black")
 ia_frame.grid(row=0, column=1, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
@@ -149,7 +258,7 @@ graph_settings_frame.columnconfigure(3, weight=1)
 graph_settings_title = Tk.Label(master=graph_settings_frame, text="Graph Einstellungen:")
 graph_settings_title.grid(row=0, column=0, columnspan=4, sticky=Tk.N)
 
-button_graph_reset = Tk.Button(master=graph_settings_frame, text="Graph zurücksetzen", command=lambda: change_res(1000))
+button_graph_reset = Tk.Button(master=graph_settings_frame, text="Graph zurücksetzen", command=lambda: reset_graph())
 button_graph_reset.grid(row=1, column=0, columnspan=4, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
 
 button_graph_toggle = Tk.Button(master=graph_settings_frame, text="Starte Messung", command=lambda: change_res(1000))
@@ -160,13 +269,13 @@ button_graph_over_again.grid(row=3, column=0, columnspan=4, sticky=Tk.N+Tk.S+Tk.
 
 graph_colors= Tk.Label(master=graph_settings_frame, text="Farbauswahl:")
 graph_colors.grid(row=4, column=0, columnspan=4, sticky=Tk.N)
-button_black = Tk.Button(master=graph_settings_frame, text="Schwarz", fg="black", command=lambda: change_res(1000))
+button_black = Tk.Button(master=graph_settings_frame, text="Schwarz", fg="black", command=lambda: set_graph_color("black"))
 button_black.grid(row=5, column=0, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
-button_blue = Tk.Button(master=graph_settings_frame, text="Blau", fg="blue", command=lambda: change_res(1000))
+button_blue = Tk.Button(master=graph_settings_frame, text="Blau", fg="blue", command=lambda: set_graph_color("blue"))
 button_blue.grid(row=5, column=1, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
-button_red = Tk.Button(master=graph_settings_frame, text="Rot", fg="red", command=lambda: change_res(1000))
+button_red = Tk.Button(master=graph_settings_frame, text="Rot", fg="red", command=lambda: set_graph_color("red"))
 button_red.grid(row=5, column=2, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
-button_green = Tk.Button(master=graph_settings_frame, text="Grün", fg="green", command=lambda: change_res(1000))
+button_green = Tk.Button(master=graph_settings_frame, text="Grün", fg="green", command=lambda: set_graph_color("green"))
 button_green.grid(row=5, column=3, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
 graph_pen= Tk.Label(master=graph_settings_frame, text="Stift ist bei: (0,0), blau")
 graph_pen.grid(row=6, column=0, columnspan=4, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
@@ -189,7 +298,7 @@ set_res_entry.insert(0, "3000.25")
 set_res_entry.grid(row=1, column=1, sticky=Tk.N, pady=5)
 set_res_entry_label = Tk.Label(master=res_settings_frame, text=" Ohm")
 set_res_entry_label.grid(row=1, column=2, sticky=Tk.N, pady=5, padx=5)
-set_res_send = Tk.Button(master=res_settings_frame, text="senden", command=lambda: change_res())
+set_res_send = Tk.Button(master=res_settings_frame, text="senden", command=lambda: set_resistor())
 set_res_send.grid(row=1, column=3, sticky=Tk.N)
 
 res_row_frame = Tk.Frame(ia_frame, bd=10, highlightthickness=1, highlightcolor="black", highlightbackground="black")
@@ -226,7 +335,7 @@ res_time_entry = Tk.Entry(master=res_row_frame, width=9)
 res_time_entry.insert(0, "0.5")
 res_time_entry.grid(row=4, column=1, sticky=Tk.N)
 
-res_row_send = Tk.Button(master=res_row_frame, text="Starte Messreihe", command=lambda: change_res(1000))
+res_row_send = Tk.Button(master=res_row_frame, text="Starte Messreihe", command=lambda: set_resistors())
 res_row_send.grid(row=5, column=0, columnspan=2, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
 res_row_stop = Tk.Button(master=res_row_frame, text="Stope Messreihe", command=lambda: change_res(1000))
 res_row_stop.grid(row=6, column=0, columnspan=2, sticky=Tk.N+Tk.S+Tk.W+Tk.E)
