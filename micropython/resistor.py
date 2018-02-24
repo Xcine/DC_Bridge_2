@@ -36,7 +36,7 @@ class Resistor(object):
 		self.lcd.set_pos(25, 60)
 		self.lcd.write("0000.000Ω")
 
-		self.acd = pyb.ADC(pyb.Pin('X19'))
+		self.adc = pyb.ADC(pyb.Pin('X19'))
 		self.adc_value = float(self.adc.read()/4096.0)
 
 	def get_adc_string(self):
@@ -44,7 +44,7 @@ class Resistor(object):
 		for i in range(len(means)):
 			x = float(self.adc.read()/4096.0)
 			means[i] = x
-		adc_value = build_mean(means)
+		adc_value = self.build_mean(means)
 		print(adc_value)
 
 	def find_binary_resistor(self, input=1000.0):
@@ -155,9 +155,9 @@ class Resistor(object):
 
 		return dummy_list
 
-	def build_mean(mean_array, sum=0):
-	"""Returns the mean of an Array."""
-	for i in mean_array:
-		sum += i
-	return float(sum/len(mean_array))
+	def build_mean(self, mean_array, sum=0):
+		"""Returns the mean of an Array."""
+		for i in mean_array:
+			sum += i
+		return float(sum/len(mean_array))
 			
