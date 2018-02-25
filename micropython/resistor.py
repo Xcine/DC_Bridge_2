@@ -45,7 +45,8 @@ class Resistor(object):
 			x = float(self.adc.read()/4096.0)
 			means[i] = x
 		adc_value = self.build_mean(means)
-		print(adc_value)
+		ud = ((10000.0/18333.0)*adc_value - (330000.0/366666.0))/(1.0 - (100000.0/366666.0))
+		print(ud)
 
 	def find_binary_resistor(self, input=1000.0):
 		"""Finds the next valid resistor and returns the resistor as a list of bits."""
